@@ -8,25 +8,23 @@ mkdir -p \
     /var/tmp/nginx
 
 # generate keys (maybe)
+# https://github.com/acmesh-official/acme.sh/wiki/ZeroSSL.com-CA
 if [[ $DISABLE_HTTPS -ne 1 ]]; then
     if [[ $ENABLE_LETSENCRYPT -eq 1 ]]; then
         mkdir -p /config/acme.sh
         pushd /opt
         sh ./acme.sh --install --home /config/acme.sh --accountemail $LETSENCRYPT_EMAIL
+        /config/acme.sh/acme.sh --register-account --server zerossl -m $LETSENCRYPT_EMAIL
+        curl https://raw.githubusercontent.com/acmesh-official/acme.sh/3.0.6/dnsapi/dns_dgon.sh --create-dirs -o /config/acme.sh/dnsapi/dns_dgon.sh
         popd
 
-        STAGING=""
-        if [[ $LETSENCRYPT_USE_STAGING -eq 1 ]]; then
-            STAGING="--staging"
-        fi
         export LE_WORKING_DIR="/config/acme.sh"
-        # TODO: move away from standalone mode to webroot mode.
+
         /config/acme.sh/acme.sh \
-            $STAGING \
+            --home /config/acme.sh \
+            --server zerossl \
             --issue \
-            --standalone \
-            --pre-hook "if [[ -d /var/run/s6/services/nginx ]]; then s6-svc -d /var/run/s6/services/nginx; fi" \
-            --post-hook "if [[ -d /var/run/s6/services/nginx ]]; then s6-svc -u /var/run/s6/services/nginx; fi" \
+            --dns dns_dgon \
             -d $LETSENCRYPT_DOMAIN
         rc=$?
         if [[ $rc -eq 1 ]]; then
@@ -40,6 +38,7 @@ if [[ $DISABLE_HTTPS -ne 1 ]]; then
         if [[ $rc -eq 0 ]]; then
             mkdir -p /config/acme-certs/$LETSENCRYPT_DOMAIN
             if ! /config/acme.sh/acme.sh \
+                    --home /config/acme.sh \
                     --install-cert -d $LETSENCRYPT_DOMAIN \
                     --key-file /config/acme-certs/$LETSENCRYPT_DOMAIN/key.pem  \
                     --fullchain-file /config/acme-certs/$LETSENCRYPT_DOMAIN/fullchain.pem ; then
