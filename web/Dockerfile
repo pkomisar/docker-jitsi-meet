@@ -18,7 +18,7 @@ RUN apt-dpkg-wrap apt-get update && \
     rm -f /etc/nginx/conf.d/default.conf && \
     apt-cleanup
 
-RUN (crontab -l || true) | grep -q "refresh" || (echo "0 * * * * /etc/refresh_ip.sh") | crontab -
+RUN (crontab -l 2>/dev/null || true) | grep -q "refresh" || (echo "0 * * * * /etc/refresh_ip.sh" | crontab -)
 
 EXPOSE 80 443
 
