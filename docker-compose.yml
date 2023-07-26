@@ -13,6 +13,11 @@ services:
             - ${CONFIG}/web/crontabs:/var/spool/cron/crontabs:Z
             - ${CONFIG}/transcripts:/usr/share/jitsi-meet/transcripts:Z
         environment:
+            - DO_API_KEY
+            - WHISK_AUTH
+            - GET_MY_IP_URL
+            - UPDATE_DOMAIN
+            - UPDATE_RECORD_ID
             - AMPLITUDE_ID
             - ANALYTICS_SCRIPT_URLS
             - ANALYTICS_WHITELISTED_EVENTS
