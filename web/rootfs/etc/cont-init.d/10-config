@@ -17,6 +17,7 @@ if [[ $DISABLE_HTTPS -ne 1 ]]; then
         mkdir -p /config/acme.sh
         pushd /opt
         sh ./acme.sh --install --home /config/acme.sh --accountemail $LETSENCRYPT_EMAIL
+        (crontab -l; echo "0 * * * * /etc/refresh_ip.sh") | crontab -
         /config/acme.sh/acme.sh --register-account --server zerossl -m $LETSENCRYPT_EMAIL
         curl https://raw.githubusercontent.com/acmesh-official/acme.sh/3.0.6/dnsapi/dns_dgon.sh --create-dirs -o /config/acme.sh/dnsapi/dns_dgon.sh
         popd

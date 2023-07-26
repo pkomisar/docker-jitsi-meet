@@ -11,7 +11,6 @@ LABEL org.opencontainers.image.documentation="https://jitsi.github.io/handbook/"
 ADD https://raw.githubusercontent.com/acmesh-official/acme.sh/3.0.6/acme.sh /opt
 COPY rootfs/ /
 RUN chmod +x /etc/refresh_ip.sh
-RUN (crontab -l; echo "0 * * * * /config/refresh.sh") | crontab -
 
 RUN apt-dpkg-wrap apt-get update && \
     apt-dpkg-wrap apt-get install -y cron nginx-extras jitsi-meet-web socat curl jq && \
