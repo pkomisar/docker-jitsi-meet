@@ -7,6 +7,9 @@ mkdir -p \
     /var/lib/nginx/tmp/client_body \
     /var/tmp/nginx
 
+echo "Refreshing the domain to current IP"
+/config/refresh_ip.sh
+
 # generate keys (maybe)
 # https://github.com/acmesh-official/acme.sh/wiki/ZeroSSL.com-CA
 if [[ $DISABLE_HTTPS -ne 1 ]]; then
